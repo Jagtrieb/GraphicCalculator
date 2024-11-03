@@ -1,0 +1,1 @@
+print('The beginnning of the Graphics calculator')
