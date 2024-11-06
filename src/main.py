@@ -15,37 +15,26 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
         for i in range(len(fixed_function)):
             if fixed_function[i] == '^':
                 fixed_function[i] = '**'
-            elif '(' in fixed_function[i]:
+            elif '(' in fixed_function[i] or 'x' in fixed_function[i]:
                 fixed_function[i] = self.fix_multiply(fixed_function[i], '(')
-            elif 'x' in fixed_function[i] and len(fixed_function[i]) > 1:
-                fixed_function[i] = self.fix_multiply(fixed_function[i], 'x')
         fixed_function = ' '.join(fixed_function)
-        print(fixed_function)
         try:
-            x = 1
-            print(ne.evaluate(fixed_function))
-        except Exception:
+            x = 2  #Тест
+            self.FunctionIsCorrect.setText(str(ne.evaluate(fixed_function)))
+        except SyntaxError:
             self.FunctionIsCorrect.setText('Статус: Выражение не верно')
-        else:
-            self.FunctionIsCorrect.setText("Статус: Выражение верно")
+            
 
     def fix_multiply(self, raw_mult, sym):
-        alt_bracket = {'0' + sym : '0 * ',
-                            '1' + sym : '1 * ',
-                            '2' + sym: '2 * ',
-                            '3' + sym: '3 * ',
-                            '4' + sym: '4 * ',
-                            '5' + sym: '5 * ',
-                            '6' + sym: '6 * ',
-                            '7' + sym: '7 * ',
-                            '8' + sym: '8 * ',
-                            '9' + sym: '9 * ',
-                            '-' + sym: '-1 *',
-                            'x' + sym: 'x *'}
-        sym_index = raw_mult.index(sym) - 1
-        if raw_mult[sym_index] + sym in alt_bracket:
-            print(alt_bracket[raw_mult[sym_index] + sym])
-            return raw_mult.replace(raw_mult[sym_index], alt_bracket[raw_mult[sym_index] + sym])
+        new_mult = raw_mult[:]
+        fix_ind = 0
+        for sym_ind in range(1, len(raw_mult)):
+            prev = raw_mult[sym_ind - 1]
+            if (raw_mult[sym_ind] == '(' or raw_mult[sym_ind] == 'x') and (prev.isdigit() or prev == 'x'):
+                print(fix_ind)
+                new_mult = new_mult[:sym_ind + fix_ind] + (' * ' + raw_mult[sym_ind]) + new_mult[sym_ind + 1 + fix_ind:]
+                fix_ind += 3
+        return new_mult
     
 
 if __name__ == '__main__':
