@@ -4,7 +4,7 @@ from math import pi, sin, cos
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from ui_file import Ui_MainWindow
 
-class GraphicCalculator(QMainWindow, Ui_MainWindow):
+class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. калькулятора
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -23,13 +23,16 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
         print(fixed_function)
         try:
             self.CurrnetFunction = MathFunction(fixed_function, entered_function)
-            print(self.CurrnetFunction.return_value(5).round(10))
+            answer = self.CurrnetFunction.return_value(5).round(10)
+            print(answer)
+            #if str(answer) == 'inf' or str(answer) == 'nan':
+            #    raise ValueError
             self.FunctionIsCorrect.setText('Статус: Выражение верно')
         except Exception:
             self.FunctionIsCorrect.setText('Статус: Выражение не верно')
             
 
-    def fix_multiply(self, raw_mult):
+    def fix_multiply(self, raw_mult): #Функция, заменяющая умножение типа 2x или x(...) на 2 * x и x * (...)
         new_mult = raw_mult[:]
         fix_ind = 0
         for sym_ind in range(1, len(raw_mult)):
