@@ -1,7 +1,8 @@
 import sys
 import numexpr as ne
-from math import pi, sin, cos
-from PyQt6.QtWidgets import QApplication, QMainWindow, QGraphicsScene
+from numpy import nan
+from math import pi
+from PyQt6.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QColorDialog
 from PyQt6.QtGui import QColor, QPen, QBrush
 from ui_file import Ui_MainWindow
 
@@ -13,6 +14,7 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         self.scale = 1 #Масштаб координатной плоскости. По умолчанию(100%) 20 пикселей равняются 1 единице в плоскости
         super().__init__()
         self.setupUi(self)
+        self.ColorSeletButton.clicked.connect(self.select_func_color)
         self.CurrnetFunction = MathFunction('', '')
         self.FunctionInput.textChanged.connect(self.revise_function)
         self.scene = QGraphicsScene()
@@ -20,8 +22,7 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         self.graphicsView.setBackgroundBrush(QBrush(QColor.fromRgb(255, 255, 255)))
         self.graphicsView.setScene(self.scene)
         self.draw_grid()
-        #self.text = self.scene.addText('Hello')
-        #self.scene.addEllipse(2000, self.zero_y(), 5, 5, self.CurrnetFunction.pen)
+
 
     def pix_to_coord(self, raw):
         return (raw - self.scene.width() / 2 + self.correctiveX) / (self.PPS * self.scale)
@@ -36,18 +37,33 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
             cur_y = self.coords_to_pix(self.CurrnetFunction.return_value(cur_x))
             prev_y = self.coords_to_pix(self.CurrnetFunction.return_value(prev_x))
             print(f'x: {cur_x}; cur_y: {cur_y}')
-            self.scene.addLine(pix_x - 1, prev_y, pix_x, cur_y, self.CurrnetFunction.pen)
+            if not ((str(cur_y) == 'nan') or (str(cur_y) == 'inf')):
+                self.scene.addLine(pix_x - 1, prev_y, pix_x, cur_y, self.CurrnetFunction.pen)
 
     def draw_grid(self):
         pen = QPen(QColor.fromRgb(220, 220, 220))
         end = int(self.scene.width())
         for coord in range(0, end + self.PPS, self.PPS):
-            if coord == end / 2:
-                self.scene.addLine(0, coord, end, coord)
-                self.scene.addLine(coord, 0, coord, end)
-            else:
-                self.scene.addLine(0, coord, end, coord, pen)
-                self.scene.addLine(coord, 0, coord, end, pen)
+            self.scene.addLine(0, coord, end, coord, pen)
+            self.scene.addLine(coord, 0, coord, end, pen)
+        
+        self.scene.addLine(0, end / 2, end, end / 2)
+        self.scene.addLine(end / 2, 0, end / 2, end)
+
+    def drawing_procedure(self):
+        self.scene.clear()
+        self.draw_grid()
+        self.draw_function()
+
+    def select_func_color(self):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            print(type(color))
+            self.ColorSeletButton.setStyleSheet(
+                "background-color: {}".format(color.name()))
+            self.CurrnetFunction.pen.setColor(color)
+            self.drawing_procedure()
+        
 
     def revise_function(self):
         entered_function = self.FunctionInput.toPlainText()
@@ -60,11 +76,14 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         fixed_function = ' '.join(fixed_function)
         #print(fixed_function)
         try:
-            self.CurrnetFunction = MathFunction(fixed_function, entered_function)
-            self.FunctionIsCorrect.setText('Статус: Выражение верно')
-            self.scene.clear()
-            self.draw_grid()
-            self.draw_function()
+            #self.CurrnetFunction = MathFunction(fixed_function, entered_function)
+            self.CurrnetFunction.function = fixed_function
+            self.CurrnetFunction.str_function = entered_function
+            self.FunctionIsCorrect.setText('Статус: Выражение верно' if fixed_function else 'Статус: Выражение не введено')
+            self.drawing_procedure()
+            # self.scene.clear()
+            # self.draw_grid()
+            # self.draw_function()
         except Exception as e:
             #print(e)
             self.FunctionIsCorrect.setText('Статус: Выражение не верно')
@@ -80,18 +99,20 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         return new_mult
     
 class MathFunction:
-    def __init__(self, function, str_function):
+    def __init__(self, function, str_function, color = QColor.fromRgb(255, 0, 0)):
         self.function = function
         self.str_function = str_function
-        self.pen = QPen(QColor.fromRgb(255, 0, 0))
+        self.color = color
+        self.pen = QPen(self.color)
 
     def __str__(self):
         return self.str_function
     
     def return_value(self, cur_x):
         x = cur_x
-        return ne.evaluate(self.function)
-
+        if self.function:
+            return ne.evaluate(self.function)
+        return nan
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
