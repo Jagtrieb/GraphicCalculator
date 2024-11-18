@@ -10,15 +10,9 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
-    """
-    Класс главного окна приложения, описывающий используемые в нём виджеты
-    """
     def setupUi(self, MainWindow):
-        """
-        Функция, инициализирующая главное окно и его виджеты
-        """
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(683, 536)
+        MainWindow.resize(687, 536)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.FunctionInput = QtWidgets.QTextEdit(parent=self.centralwidget)
@@ -47,9 +41,17 @@ class Ui_MainWindow(object):
         self.ColorSeletButton.setStyleSheet("background-color: red")
         self.ColorSeletButton.setText("")
         self.ColorSeletButton.setObjectName("ColorSeletButton")
+        self.label_4 = QtWidgets.QLabel(parent=self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(530, 420, 61, 21))
+        self.label_4.setObjectName("label_4")
+        self.ScalesBox = QtWidgets.QComboBox(parent=self.centralwidget)
+        self.ScalesBox.setGeometry(QtCore.QRect(590, 420, 71, 26))
+        self.ScalesBox.setObjectName("ScalesBox")
+        self.ScalesBox.addItems(['25%', '50%', '75%', '100%', '125%', '150%', '175%', '200%'])
+        self.ScalesBox.setCurrentIndex(3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 683, 37))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 687, 37))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(parent=MainWindow)
@@ -67,3 +69,4 @@ class Ui_MainWindow(object):
         self.AddFuncButton.setText(_translate("MainWindow", "Добавить"))
         self.label_2.setText(_translate("MainWindow", "y = "))
         self.label_3.setText(_translate("MainWindow", "Цвет:"))
+        self.label_4.setText(_translate("MainWindow", "Масштаб"))

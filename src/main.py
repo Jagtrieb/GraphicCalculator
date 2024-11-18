@@ -28,6 +28,7 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         self.ColorSeletButton.clicked.connect(self.select_func_color)
         self.CurrnetFunction = MathFunction('', '')
         self.FunctionInput.textChanged.connect(self.revise_function)
+        self.ScalesBox.currentTextChanged.connect(self.change_scale)
         self.scene = QGraphicsScene()
         self.scene.setSceneRect(0, 0, 4000, 4000)
         self.graphicsView.setBackgroundBrush(QBrush(QColor.fromRgb(255, 255, 255)))
@@ -64,7 +65,7 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
             cur_x = self.pix_to_coord(pix_x)
             cur_y = self.coords_to_pix(self.CurrnetFunction.return_value(cur_x))
             prev_y = self.coords_to_pix(self.CurrnetFunction.return_value(prev_x))
-            print(f'x: {cur_x}; cur_y: {cur_y}')
+            #print(f'x: {cur_x}; cur_y: {cur_y}')
             if not ((str(cur_y) == 'nan') or (str(cur_y) == 'inf')):
                 self.scene.addLine(pix_x - 1, prev_y, pix_x, cur_y, self.CurrnetFunction.pen)
 
@@ -77,9 +78,10 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         for coord in range(0, end + self.PPS, self.PPS):
             self.scene.addLine(0, coord, end, coord, pen)
             self.scene.addLine(coord, 0, coord, end, pen)
-        
-        self.scene.addLine(0, end / 2, end, end / 2)
-        self.scene.addLine(end / 2, 0, end / 2, end)
+        if self.correctiveX == 0:
+            self.scene.addLine(0, end / 2, end, end / 2)
+        if self.correctiveY == 0:
+            self.scene.addLine(end / 2, 0, end / 2, end)
 
     def drawing_procedure(self):
         """
@@ -101,6 +103,9 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
             self.CurrnetFunction.pen.setColor(color)
             self.drawing_procedure()
         
+    def change_scale(self):
+        self.scale = float(str(self.ScalesBox.currentText()[:-1])) / 100
+        self.drawing_procedure()
 
     def revise_function(self):
         """
