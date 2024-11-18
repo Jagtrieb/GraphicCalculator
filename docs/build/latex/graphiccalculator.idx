@@ -1,0 +1,14 @@
+\indexentry{module@\spxentry{module}!main@\spxentry{main}|hyperpage}{1}
+\indexentry{main@\spxentry{main}!module@\spxentry{module}|hyperpage}{1}
+\indexentry{GraphicCalculator (класс в main)@\spxentry{GraphicCalculator}\spxextra{класс в main}|hyperpage}{1}
+\indexentry{coords\_to\_pix() (метод main.GraphicCalculator)@\spxentry{coords\_to\_pix()}\spxextra{метод main.GraphicCalculator}|hyperpage}{1}
+\indexentry{draw\_function() (метод main.GraphicCalculator)@\spxentry{draw\_function()}\spxextra{метод main.GraphicCalculator}|hyperpage}{1}
+\indexentry{draw\_grid() (метод main.GraphicCalculator)@\spxentry{draw\_grid()}\spxextra{метод main.GraphicCalculator}|hyperpage}{2}
+\indexentry{drawing\_procedure() (метод main.GraphicCalculator)@\spxentry{drawing\_procedure()}\spxextra{метод main.GraphicCalculator}|hyperpage}{2}
+\indexentry{fix\_multiply() (метод main.GraphicCalculator)@\spxentry{fix\_multiply()}\spxextra{метод main.GraphicCalculator}|hyperpage}{2}
+\indexentry{pix\_to\_coord() (метод main.GraphicCalculator)@\spxentry{pix\_to\_coord()}\spxextra{метод main.GraphicCalculator}|hyperpage}{2}
+\indexentry{revise\_function() (метод main.GraphicCalculator)@\spxentry{revise\_function()}\spxextra{метод main.GraphicCalculator}|hyperpage}{2}
+\indexentry{select\_func\_color() (метод main.GraphicCalculator)@\spxentry{select\_func\_color()}\spxextra{метод main.GraphicCalculator}|hyperpage}{2}
+\indexentry{MathFunction (класс в main)@\spxentry{MathFunction}\spxextra{класс в main}|hyperpage}{2}
+\indexentry{module@\spxentry{module}!ui\_file@\spxentry{ui\_file}|hyperpage}{2}
+\indexentry{ui\_file@\spxentry{ui\_file}!module@\spxentry{module}|hyperpage}{2}

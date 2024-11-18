@@ -1,6 +1,7 @@
 import os
 import sys
-
+import sphinx
+from sphinx.builders.latex import LaTeXBuilder
 sys.path.insert(0, os.path.abspath('../../src'))
 
 # Configuration file for the Sphinx documentation builder.
@@ -19,7 +20,8 @@ release = '0.6'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx.ext.autodoc',
+              ]
 
 templates_path = ['_templates']
 exclude_patterns = []

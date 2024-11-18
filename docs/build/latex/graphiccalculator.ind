@@ -1,0 +1,50 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter C
+  \item \spxentry{coords\_to\_pix()}\spxextra{метод main.GraphicCalculator}, \hyperpage{1}
+
+  \indexspace
+  \bigletter D
+  \item \spxentry{draw\_function()}\spxextra{метод main.GraphicCalculator}, \hyperpage{1}
+  \item \spxentry{draw\_grid()}\spxextra{метод main.GraphicCalculator}, \hyperpage{2}
+  \item \spxentry{drawing\_procedure()}\spxextra{метод main.GraphicCalculator}, \hyperpage{2}
+
+  \indexspace
+  \bigletter F
+  \item \spxentry{fix\_multiply()}\spxextra{метод main.GraphicCalculator}, \hyperpage{2}
+
+  \indexspace
+  \bigletter G
+  \item \spxentry{GraphicCalculator}\spxextra{класс в main}, \hyperpage{1}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{main}
+    \subitem \spxentry{module}, \hyperpage{1}
+  \item \spxentry{MathFunction}\spxextra{класс в main}, \hyperpage{2}
+  \item \spxentry{module}
+    \subitem \spxentry{main}, \hyperpage{1}
+    \subitem \spxentry{ui\_file}, \hyperpage{2}
+
+  \indexspace
+  \bigletter P
+  \item \spxentry{pix\_to\_coord()}\spxextra{метод main.GraphicCalculator}, \hyperpage{2}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{revise\_function()}\spxextra{метод main.GraphicCalculator}, \hyperpage{2}
+
+  \indexspace
+  \bigletter S
+  \item \spxentry{select\_func\_color()}\spxextra{метод main.GraphicCalculator}, \hyperpage{2}
+
+  \indexspace
+  \bigletter U
+  \item \spxentry{ui\_file}
+    \subitem \spxentry{module}, \hyperpage{2}
+
+\end{sphinxtheindex}
