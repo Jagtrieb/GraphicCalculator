@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html lang="ru" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>src &#8212; документация Graphic Calculator 0.6</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=82864fe3"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/translations.js?v=5b699b7f"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="prev" title="Graphic Calculator documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="src">
+<h1>src<a class="headerlink" href="#src" title="Ссылка на этот заголовок">¶</a></h1>
+<p>Директория, в которой хранятся файлы с основным кодом приложения</p>
+<section id="module-main">
+<span id="main-py"></span><h2>main.py<a class="headerlink" href="#module-main" title="Ссылка на этот заголовок">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="main.GraphicCalculator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">GraphicCalculator</span></span><a class="headerlink" href="#main.GraphicCalculator" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Основной класс графического калькулятора</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scene</strong> – поле, на котором будут отрисовываться графики</p></li>
+<li><p><strong>CurrentFunction</strong> – объект класса <a class="reference internal" href="#main.MathFunction" title="main.MathFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">MathFunction</span></code></a>, который обрабатывается в момент работы приложения</p></li>
+<li><p><strong>scale</strong> – масштаб координатной плоскости</p></li>
+<li><p><strong>PPS</strong> (<em>pixels per step</em>) – отношение количества пикселей в self.scene к единице координатной плоскости</p></li>
+<li><p><strong>correctiveX</strong> – смещение координатной плоскости по оси X</p></li>
+<li><p><strong>correctiveY</strong> – смещение координатной плоскости по оси Y</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="main.GraphicCalculator.coords_to_pix">
+<span class="sig-name descname"><span class="pre">coords_to_pix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.GraphicCalculator.coords_to_pix" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Перевод значения на координатной плоскости в значение пикселя в <em>self.scene</em></p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw</strong> – Значение координаты на координатной плоскости</p>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>Координата пикселя в <em>self.scene</em></p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.GraphicCalculator.draw_function">
+<span class="sig-name descname"><span class="pre">draw_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.GraphicCalculator.draw_function" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Функция, которая отрисовывает математическую функцию</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.GraphicCalculator.draw_grid">
+<span class="sig-name descname"><span class="pre">draw_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.GraphicCalculator.draw_grid" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Отрисовывает сетку координатной плоскости на виджете <em>self.scene</em></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.GraphicCalculator.drawing_procedure">
+<span class="sig-name descname"><span class="pre">drawing_procedure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.GraphicCalculator.drawing_procedure" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Функция, запускающая процессы отрисовки сетки и графиков</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.GraphicCalculator.fix_multiply">
+<span class="sig-name descname"><span class="pre">fix_multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_mult</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.GraphicCalculator.fix_multiply" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Функция для замены умножения в виде 2x или x(…) на 2 * x и x * (…), для правильного прочтения введённой математической функции</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw_mult</strong> – Введённая (<em>сырая</em>) математическая функция</p>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>Введённая математическая функция, которая была исправлена для корректного прочтения и обработки</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.GraphicCalculator.pix_to_coord">
+<span class="sig-name descname"><span class="pre">pix_to_coord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.GraphicCalculator.pix_to_coord" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Перевод координаты пикселя в self.scene в значение координаты в координатной плоскости</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw</strong> – Значение координаты пикселя в <em>self.scene</em></p>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>Значение координаты в координатной плоскости</p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.GraphicCalculator.revise_function">
+<span class="sig-name descname"><span class="pre">revise_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.GraphicCalculator.revise_function" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Функция для проверки введённой математической функции и её отрисовка при удовлетворительном результате</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.GraphicCalculator.select_func_color">
+<span class="sig-name descname"><span class="pre">select_func_color</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.GraphicCalculator.select_func_color" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Функия для выбора цвета графика <em>self.CurrecntFunction</em></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="main.MathFunction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">MathFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color=&lt;PyQt6.QtGui.QColor</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.MathFunction" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Класс математической функции, хранящий в себе Математическую функцию в двух формах (для расчёта и для демонстрации), а также цвет, которым будет отрисован график функции</p>
+</dd></dl>
+
+</section>
+<section id="module-ui_file">
+<span id="ui-file-py"></span><h2>ui_file.py<a class="headerlink" href="#module-ui_file" title="Ссылка на этот заголовок">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ui_file.Ui_MainWindow">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui_file.</span></span><span class="sig-name descname"><span class="pre">Ui_MainWindow</span></span><a class="headerlink" href="#ui_file.Ui_MainWindow" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Класс главного окна приложения, описывающий используемые в нём виджеты</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ui_file.Ui_MainWindow.setupUi">
+<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">MainWindow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui_file.Ui_MainWindow.setupUi" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Функция, инициализирующая главное окно и его виджеты</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Graphic Calculator</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Искать" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Навигация</h3>
+<p class="caption" role="heading"><span class="caption-text">GraphicCalculator</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">src</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-main">main.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ui_file">ui_file.py</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="предыдущая глава">Graphic Calculator documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Jagtrieb.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/src.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

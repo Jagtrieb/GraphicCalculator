@@ -1,4 +1,5 @@
 import sys
+import csv
 import numexpr as ne
 from numpy import nan
 from math import pi
@@ -7,6 +8,16 @@ from PyQt6.QtGui import QColor, QPen, QBrush
 from ui_file import Ui_MainWindow
 
 class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. калькулятора
+    """
+    Основной класс графического калькулятора
+    
+    :param scene: поле, на котором будут отрисовываться графики
+    :param CurrentFunction: объект класса :class:`MathFunction`, который обрабатывается в момент работы приложения 
+    :param scale: масштаб координатной плоскости
+    :param pixels per step *PPS*: отношение количества пикселей в self.scene к единице координатной плоскости
+    :param correctiveX: смещение координатной плоскости по оси X
+    :param correctiveY: смещение координатной плоскости по оси Y
+    """
     def __init__(self):
         self.correctiveX = 0
         self.correctiveY = 0
@@ -25,12 +36,29 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
 
 
     def pix_to_coord(self, raw):
+        """
+        Перевод координаты пикселя в self.scene в значение координаты в координатной плоскости
+
+        :param raw: Значение координаты пикселя в *self.scene*
+        :return: Значение координаты в координатной плоскости
+        :rtype: float
+        """
         return (raw - self.scene.width() / 2 + self.correctiveX) / (self.PPS * self.scale)
     
     def coords_to_pix(self, raw):
+        """
+        Перевод значения на координатной плоскости в значение пикселя в *self.scene*
+
+        :param raw: Значение координаты на координатной плоскости
+        :return: Координата пикселя в *self.scene*
+        :rtype: float
+        """
         return self.scene.height() - (raw * (self.PPS * self.scale) + self.scene.height() / 2)
 
     def draw_function(self):
+        """
+        Функция, которая отрисовывает математическую функцию
+        """
         for pix_x in range(1, int(self.scene.width()) + 1):
             prev_x = self.pix_to_coord(pix_x - 1)
             cur_x = self.pix_to_coord(pix_x)
@@ -41,6 +69,9 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
                 self.scene.addLine(pix_x - 1, prev_y, pix_x, cur_y, self.CurrnetFunction.pen)
 
     def draw_grid(self):
+        """
+        Отрисовывает сетку координатной плоскости на виджете *self.scene*
+        """
         pen = QPen(QColor.fromRgb(220, 220, 220))
         end = int(self.scene.width())
         for coord in range(0, end + self.PPS, self.PPS):
@@ -51,11 +82,17 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         self.scene.addLine(end / 2, 0, end / 2, end)
 
     def drawing_procedure(self):
+        """
+        Функция, запускающая процессы отрисовки сетки и графиков
+        """
         self.scene.clear()
         self.draw_grid()
         self.draw_function()
 
     def select_func_color(self):
+        """
+        Функия для выбора цвета графика *self.CurrecntFunction*
+        """
         color = QColorDialog.getColor()
         if color.isValid():
             print(type(color))
@@ -66,6 +103,9 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         
 
     def revise_function(self):
+        """
+        Функция для проверки введённой математической функции и её отрисовка при удовлетворительном результате
+        """
         entered_function = self.FunctionInput.toPlainText()
         fixed_function = entered_function.split()
         for i in range(len(fixed_function)):
@@ -89,6 +129,12 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
             self.FunctionIsCorrect.setText('Статус: Выражение не верно')
             
     def fix_multiply(self, raw_mult): #Функция, заменяющая умножение типа 2x или x(...) на 2 * x и x * (...)
+        """
+        Функция для замены умножения в виде 2x или x(...) на 2 * x и x * (...), для правильного прочтения введённой математической функции 
+        
+        :param raw_mult: Введённая (*сырая*) математическая функция
+        :return: Введённая математическая функция, которая была исправлена для корректного прочтения и обработки
+        """
         new_mult = raw_mult[:]
         fix_ind = 0
         for sym_ind in range(1, len(raw_mult)):
@@ -99,6 +145,9 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         return new_mult
     
 class MathFunction:
+    """
+    Класс математической функции, хранящий в себе Математическую функцию в двух формах (для расчёта и для демонстрации), а также цвет, которым будет отрисован график функции
+    """
     def __init__(self, function, str_function, color = QColor.fromRgb(255, 0, 0)):
         self.function = function
         self.str_function = str_function

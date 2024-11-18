@@ -10,7 +10,13 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
+    """
+    Класс главного окна приложения, описывающий используемые в нём виджеты
+    """
     def setupUi(self, MainWindow):
+        """
+        Функция, инициализирующая главное окно и его виджеты
+        """
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(683, 536)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
