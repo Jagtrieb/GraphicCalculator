@@ -4,7 +4,7 @@ import numexpr as ne
 from numpy import nan
 from math import pi
 from PyQt6.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QColorDialog
-from PyQt6.QtGui import QColor, QPen, QBrush
+from PyQt6.QtGui import QColor, QPen, QBrush, QFont
 from ui_file import Ui_MainWindow
 
 class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. калькулятора
@@ -75,13 +75,34 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         """
         pen = QPen(QColor.fromRgb(220, 220, 220))
         end = int(self.scene.width())
+        mark_coord = end / 2 - self.PPS / 4
         for coord in range(0, end + self.PPS, self.PPS):
             self.scene.addLine(0, coord, end, coord, pen)
+            if self.correctiveY == 0:
+                self.scene.addLine(mark_coord, coord, mark_coord + self.PPS / 2, coord)
             self.scene.addLine(coord, 0, coord, end, pen)
+            if self.correctiveX == 0:
+                self.scene.addLine(coord, mark_coord, coord, mark_coord + self.PPS / 2)
         if self.correctiveX == 0:
             self.scene.addLine(0, end / 2, end, end / 2)
         if self.correctiveY == 0:
             self.scene.addLine(end / 2, 0, end / 2, end)
+        self.add_num_marks()
+
+    def create_num_mark(self, x, y, text):
+        mark = self.scene.addText(text)
+        mark.setPos(x, y)
+        mark.setFont(QFont("Arial", 11))
+        mark.setDefaultTextColor(QColor.fromRgb(0, 0, 0))
+
+    def add_num_marks(self):
+        end = int(self.scene.width())
+        if self.correctiveX == 0:
+            for coord in range(0, end + self.PPS, self.PPS * 5):
+                self.create_num_mark(coord - self.PPS / 1.3, end / 2, str(round((coord - end / 2) / self.PPS / self.scale, 2)))
+        if self.correctiveY == 0:
+            for coord in range(0, end + self.PPS, self.PPS * 5):
+                self.create_num_mark(end / 2, end - coord - self.PPS / 1.5, str(round((coord - end / 2) / self.PPS / self.scale, 2)))
 
     def drawing_procedure(self):
         """
