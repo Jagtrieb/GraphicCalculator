@@ -30,7 +30,7 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         self.FunctionInput.textChanged.connect(self.function_update)
         self.ScalesBox.currentTextChanged.connect(self.change_scale)
         self.scene = QGraphicsScene()
-        self.scene.setSceneRect(0, 0, 4000, 4000)
+        self.scene.setSceneRect(0, 0, 4600, 4600)
         self.graphicsView.setBackgroundBrush(QBrush(QColor.fromRgb(255, 255, 255)))
         self.graphicsView.setScene(self.scene)
         self.draw_grid()
@@ -133,21 +133,13 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         """
         Функция для проверки введённой математической функции и её отрисовка при удовлетворительном результате
         """
-        #entered_function = self.FunctionInput.toPlainText()
-        #fixed_function = self.fix_function(entered_function)
-        #print(fixed_function)
         fixed_function = self.CurrnetFunction.function
         try:
-            #self.CurrnetFunction = MathFunction(fixed_function, entered_function)
-            #self.CurrnetFunction.function = fixed_function
-            #self.CurrnetFunction.str_function = entered_function
             x = 0
             ne.evaluate(fixed_function)
             self.FunctionIsCorrect.setText('Статус: Выражение верно' if fixed_function else 'Статус: Выражение не введено')
             return 1
-            #self.drawing_procedure()
         except Exception as e:
-            #print(e)
             self.FunctionIsCorrect.setText('Статус: Выражение не верно')
             return 0
 
