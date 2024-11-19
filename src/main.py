@@ -25,8 +25,8 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         self.scale = 1
         super().__init__()
         self.setupUi(self)
-        self.ColorSeletButton.clicked.connect(self.select_func_color)
         self.CurrnetFunction = MathFunction('', '')
+        self.ColorSeletButton.clicked.connect(self.select_func_color)
         self.FunctionInput.textChanged.connect(self.function_update)
         self.ScalesBox.currentTextChanged.connect(self.change_scale)
         self.scene = QGraphicsScene()
@@ -110,7 +110,8 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         """
         self.scene.clear()
         self.draw_grid()
-        self.draw_function()
+        if self.CurrnetFunction.isCorrect:
+            self.draw_function()
 
     def select_func_color(self):
         """
@@ -176,14 +177,15 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
                 fix_ind += 3    
         return new_mult
 
- 
+
     def function_update(self):
         self.CurrnetFunction.str_function = self.FunctionInput.toPlainText()
         self.CurrnetFunction.function = self.fix_function(self.CurrnetFunction.str_function)
         if self.revise_function():
-            self.drawing_procedure()
-            return 1
-        return 0
+            self.CurrnetFunction.isCorrect = True
+        else:
+            self.CurrnetFunction.isCorrect = False
+        self.drawing_procedure()
 
 class MathFunction:
     """
@@ -194,6 +196,7 @@ class MathFunction:
         self.str_function = str_function
         self.color = color
         self.pen = QPen(self.color)
+        self.isCorrect = False
 
     def __str__(self):
         return self.str_function
