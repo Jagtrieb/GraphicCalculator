@@ -22,12 +22,12 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         self.correctiveX = 0
         self.correctiveY = 0
         self.PPS = 20 #Pixels_per_step
-        self.scale = 1 #Масштаб координатной плоскости. По умолчанию(100%) 20 пикселей равняются 1 единице в плоскости
+        self.scale = 1
         super().__init__()
         self.setupUi(self)
         self.ColorSeletButton.clicked.connect(self.select_func_color)
         self.CurrnetFunction = MathFunction('', '')
-        self.FunctionInput.textChanged.connect(self.revise_function)
+        self.FunctionInput.textChanged.connect(self.function_update)
         self.ScalesBox.currentTextChanged.connect(self.change_scale)
         self.scene = QGraphicsScene()
         self.scene.setSceneRect(0, 0, 4000, 4000)
@@ -78,14 +78,14 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         mark_coord = end / 2 - self.PPS / 4
         for coord in range(0, end + self.PPS, self.PPS):
             self.scene.addLine(0, coord, end, coord, pen)
-            if self.correctiveY == 0:
+            if self.correctiveX == 0:
                 self.scene.addLine(mark_coord, coord, mark_coord + self.PPS / 2, coord)
             self.scene.addLine(coord, 0, coord, end, pen)
-            if self.correctiveX == 0:
+            if self.correctiveY == 0:
                 self.scene.addLine(coord, mark_coord, coord, mark_coord + self.PPS / 2)
-        if self.correctiveX == 0:
-            self.scene.addLine(0, end / 2, end, end / 2)
         if self.correctiveY == 0:
+            self.scene.addLine(0, end / 2, end, end / 2)
+        if self.correctiveX == 0:
             self.scene.addLine(end / 2, 0, end / 2, end)
         self.add_num_marks()
 
@@ -97,10 +97,10 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
 
     def add_num_marks(self):
         end = int(self.scene.width())
-        if self.correctiveX == 0:
+        if self.correctiveY == 0:
             for coord in range(0, end + self.PPS, self.PPS * 5):
                 self.create_num_mark(coord - self.PPS / 1.3, end / 2, str(round((coord - end / 2) / self.PPS / self.scale, 2)))
-        if self.correctiveY == 0:
+        if self.correctiveX == 0:
             for coord in range(0, end + self.PPS, self.PPS * 5):
                 self.create_num_mark(end / 2, end - coord - self.PPS / 1.5, str(round((coord - end / 2) / self.PPS / self.scale, 2)))
 
@@ -132,28 +132,34 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         """
         Функция для проверки введённой математической функции и её отрисовка при удовлетворительном результате
         """
-        entered_function = self.FunctionInput.toPlainText()
-        fixed_function = entered_function.split()
+        #entered_function = self.FunctionInput.toPlainText()
+        #fixed_function = self.fix_function(entered_function)
+        #print(fixed_function)
+        fixed_function = self.CurrnetFunction.function
+        try:
+            #self.CurrnetFunction = MathFunction(fixed_function, entered_function)
+            #self.CurrnetFunction.function = fixed_function
+            #self.CurrnetFunction.str_function = entered_function
+            x = 0
+            ne.evaluate(fixed_function)
+            self.FunctionIsCorrect.setText('Статус: Выражение верно' if fixed_function else 'Статус: Выражение не введено')
+            return 1
+            #self.drawing_procedure()
+        except Exception as e:
+            #print(e)
+            self.FunctionIsCorrect.setText('Статус: Выражение не верно')
+            return 0
+
+    def fix_function(self, function=''):
+        fixed_function = function.split()
         for i in range(len(fixed_function)):
             if fixed_function[i] == '^':
                 fixed_function[i] = '**'
             elif '(' in fixed_function[i] or 'x' in fixed_function[i]:
                 fixed_function[i] = self.fix_multiply(fixed_function[i])
         fixed_function = ' '.join(fixed_function)
-        #print(fixed_function)
-        try:
-            #self.CurrnetFunction = MathFunction(fixed_function, entered_function)
-            self.CurrnetFunction.function = fixed_function
-            self.CurrnetFunction.str_function = entered_function
-            self.FunctionIsCorrect.setText('Статус: Выражение верно' if fixed_function else 'Статус: Выражение не введено')
-            self.drawing_procedure()
-            # self.scene.clear()
-            # self.draw_grid()
-            # self.draw_function()
-        except Exception as e:
-            #print(e)
-            self.FunctionIsCorrect.setText('Статус: Выражение не верно')
-            
+        return fixed_function
+
     def fix_multiply(self, raw_mult): #Функция, заменяющая умножение типа 2x или x(...) на 2 * x и x * (...)
         """
         Функция для замены умножения в виде 2x или x(...) на 2 * x и x * (...), для правильного прочтения введённой математической функции 
@@ -169,7 +175,16 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
                 new_mult = new_mult[:sym_ind + fix_ind] + (' * ' + raw_mult[sym_ind]) + new_mult[sym_ind + 1 + fix_ind:]
                 fix_ind += 3    
         return new_mult
-    
+
+ 
+    def function_update(self):
+        self.CurrnetFunction.str_function = self.FunctionInput.toPlainText()
+        self.CurrnetFunction.function = self.fix_function(self.CurrnetFunction.str_function)
+        if self.revise_function():
+            self.drawing_procedure()
+            return 1
+        return 0
+
 class MathFunction:
     """
     Класс математической функции, хранящий в себе Математическую функцию в двух формах (для расчёта и для демонстрации), а также цвет, которым будет отрисован график функции
