@@ -1,6 +1,0 @@
-\babel@toc {russian}{}\relax 
-\contentsline {chapter}{\numberline {1}src}{1}{chapter.1}%
-\contentsline {section}{\numberline {1.1}main.py}{1}{section.1.1}%
-\contentsline {section}{\numberline {1.2}ui\_file.py}{2}{section.1.2}%
-\contentsline {chapter}{Содержание модулей Python}{3}{section*.13}%
-\contentsline {chapter}{Алфавитный указатель}{5}{section*.14}%
