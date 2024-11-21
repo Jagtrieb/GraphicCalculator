@@ -3,11 +3,13 @@ import csv
 import numexpr as ne
 from numpy import nan
 from math import pi
-from PyQt6.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QColorDialog
+from PyQt6.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QColorDialog, QColorDialog, QFileDialog, QTableWidgetItem
 from PyQt6.QtGui import QColor, QPen, QBrush, QFont
+from PyQt6.QtCore import Qt
 from ui_file import Ui_MainWindow
+from copy import copy
 
-class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. калькулятора
+class GraphicCalculator(QMainWindow, Ui_MainWindow):
     """
     Основной класс графического калькулятора
     
@@ -25,16 +27,32 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         self.scale = 1
         super().__init__()
         self.setupUi(self)
+        self.functions = []
+        self.file_name = 'new.csv'
+        self.create_blank_table()
+        self.load_table_data(self.file_name)
+        self.tableWidget.itemDoubleClicked.connect(self.edit_color_in_table)
+        self.edit_flag = False
+        self.tableWidget.itemChanged.connect(self.edit_table_func)
+        #self.pushButton.clicked.connect(self.open_table)
+        #elf.saveFunc.clicked.connect(self.save_table_data)
         self.CurrnetFunction = MathFunction('', '')
         self.ColorSeletButton.clicked.connect(self.select_func_color)
-        self.FunctionInput.textChanged.connect(self.function_update)
+        self.FunctionInput.textChanged.connect(self.current_function_update)
         self.ScalesBox.currentTextChanged.connect(self.change_scale)
+        self.AddFuncButton.clicked.connect(self.add_function)
         self.scene = QGraphicsScene()
         self.scene.setSceneRect(0, 0, 4600, 4600)
+        self.count_coord_border()
         self.graphicsView.setBackgroundBrush(QBrush(QColor.fromRgb(255, 255, 255)))
         self.graphicsView.setScene(self.scene)
         self.draw_grid()
 
+
+    def count_coord_border(self):
+        self.top = self.scene.height() / self.PPS / 2
+        self.bottom = self.top * -1
+        print(self.top, self.bottom)
 
     def pix_to_coord(self, raw):
         """
@@ -56,18 +74,22 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         """
         return self.scene.height() - (raw * (self.PPS * self.scale) + self.scene.height() / 2)
 
-    def draw_function(self):
+    def draw_function(self, function):
         """
         Функция, которая отрисовывает математическую функцию
         """
         for pix_x in range(1, int(self.scene.width()) + 1):
             prev_x = self.pix_to_coord(pix_x - 1)
             cur_x = self.pix_to_coord(pix_x)
-            cur_y = self.coords_to_pix(self.CurrnetFunction.return_value(cur_x))
-            prev_y = self.coords_to_pix(self.CurrnetFunction.return_value(prev_x))
-            #print(f'x: {cur_x}; cur_y: {cur_y}')
-            if not ((str(cur_y) == 'nan') or (str(cur_y) == 'inf')):
-                self.scene.addLine(pix_x - 1, prev_y, pix_x, cur_y, self.CurrnetFunction.pen)
+            cur_y = self.coords_to_pix(function.return_value(cur_x))
+            prev_y = self.coords_to_pix(function.return_value(prev_x))
+            if not ((str(cur_y) == 'nan') or (str(cur_y) == 'inf') and (self.bottom < cur_y < self.top)):
+                self.scene.addLine(pix_x - 1, prev_y, pix_x, cur_y, function.pen)
+
+    def draw_all_functions(self):
+        for func in self.functions:
+            if func.isCorrect:
+                self.draw_function(func)
 
     def draw_grid(self):
         """
@@ -111,17 +133,19 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         self.scene.clear()
         self.draw_grid()
         if self.CurrnetFunction.isCorrect:
-            self.draw_function()
+            self.draw_function(self.CurrnetFunction)
+        self.draw_all_functions()
 
     def select_func_color(self):
         """
         Функия для выбора цвета графика *self.CurrecntFunction*
         """
         color = QColorDialog.getColor()
-        if color.isValid():
+        if color.isValid(): 
             print(type(color))
             self.ColorSeletButton.setStyleSheet(
                 "background-color: {}".format(color.name()))
+            self.CurrnetFunction.color = color
             self.CurrnetFunction.pen.setColor(color)
             self.drawing_procedure()
         
@@ -129,11 +153,11 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         self.scale = float(str(self.ScalesBox.currentText()[:-1])) / 100
         self.drawing_procedure()
 
-    def revise_function(self):
+    def revise_function(self, func):
         """
         Функция для проверки введённой математической функции и её отрисовка при удовлетворительном результате
         """
-        fixed_function = self.CurrnetFunction.function
+        fixed_function = func.function
         try:
             x = 0
             ne.evaluate(fixed_function)
@@ -170,14 +194,98 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):  #Класс граф. ка
         return new_mult
 
 
-    def function_update(self):
+    def current_function_update(self):
         self.CurrnetFunction.str_function = self.FunctionInput.toPlainText()
         self.CurrnetFunction.function = self.fix_function(self.CurrnetFunction.str_function)
-        if self.revise_function():
+        if self.revise_function(self.CurrnetFunction):
             self.CurrnetFunction.isCorrect = True
         else:
             self.CurrnetFunction.isCorrect = False
         self.drawing_procedure()
+
+    def add_function(self):
+        if self.CurrnetFunction.isCorrect:
+            self.functions.append(copy(self.CurrnetFunction))
+            self.FunctionInput.setText('')
+            color = QColor.fromRgb(255, 0, 0)
+            self.ColorSeletButton.setStyleSheet(
+                "background-color: {}".format(color.name()))
+            self.CurrnetFunction = MathFunction('', '')
+            self.fill_table()
+            
+
+    def open_table(self):
+        self.file_name = QFileDialog.getOpenFileName(self, 'Выбрать таблицу', '', 'Таблица (*.csv)')[0]
+        self.load_table_data(self.file_name)
+
+    def create_blank_table(self):
+        with open(self.file_name, 'w', encoding='utf8') as csvfile:
+            writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            writer.writerow(['str_func', 'color', 'function'])
+
+    def load_table_data(self, table_name):
+        self.functions = []
+        with open(table_name, 'r', encoding='utf8') as csvfile:
+            reader = csv.reader(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            next(reader)
+            for row in reader:
+                row[1] = tuple(int(i) for i in row[1][1:-1].split(', '))
+                self.functions.append(MathFunction(row[2], row[0], QColor.fromRgb(*row[1])))
+        #print(self.functions)
+        self.fill_table()
+
+    def save_table_data(self):
+        with open(self.file_name, 'w', encoding='utf8') as csvfile:
+            writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            writer.writerow(['str_func', 'color', 'function'])
+            for row, function in enumerate(self.functions):
+                rgb = (function.color.red(), function.color.green(), function.color.blue())
+                writer.writerow([function.str_function, rgb, function.function])
+
+    def fill_table(self):
+        self.tableWidget.setColumnCount(3)
+        self.tableWidget.setHorizontalHeaderLabels(['Функция', 'Цвет', 'Корректность'])
+        self.tableWidget.setRowCount(0)
+        for i, func in enumerate(self.functions):
+            self.tableWidget.setRowCount(
+                self.tableWidget.rowCount() + 1)
+            self.tableWidget.setItem(i, 0, QTableWidgetItem(func.str_function))
+
+            item = QTableWidgetItem(' ')
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
+            self.tableWidget.setItem(i, 1, item)
+            self.tableWidget.item(i, 1).setBackground(func.color)
+
+            item = QTableWidgetItem('ОК') if func.isCorrect else QTableWidgetItem("Error")
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            self.tableWidget.setItem(i, 2, item)
+            self.tableWidget.resizeColumnsToContents()
+
+    def edit_color_in_table(self, item):
+        row, column = item.row(), item.column()
+        if column == 1:
+            color = QColorDialog.getColor()
+            if color.isValid():
+                self.functions[row].pen.setColor(color)
+                self.functions[row].color = color
+                self.tableWidget.item(row, 1).setBackground(self.functions[row].color)
+                self.fill_table()
+
+    def edit_table_func(self, item):
+        row, column = item.row(), item.column()
+        if column == 0:
+            self.functions[row].str_function = self.tableWidget.item(row, 0).text()
+            self.functions[row].function = self.fix_function(self.functions[row].str_function)
+            if self.revise_function(self.functions[row]):
+                self.functions[row].isCorrect = True
+            else:
+                self.functions[row].isCorrect = False
+            item = QTableWidgetItem('ОК') if self.functions[row].isCorrect else QTableWidgetItem("Error")
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            self.tableWidget.setItem(row, 2, item)
+            self.drawing_procedure()
+            self.tableWidget.resizeColumnsToContents()
+
 
 class MathFunction:
     """
