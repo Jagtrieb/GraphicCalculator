@@ -148,6 +148,42 @@
      </rect>
     </property>
    </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>420</y>
+      <width>21</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>id:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="deleteButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>440</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Удалить</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="deletionChoose">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>420</y>
+      <width>48</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -158,8 +194,50 @@
      <height>37</height>
     </rect>
    </property>
+   <widget class="QMenu" name="fileMenu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="New_file"/>
+    <addaction name="Open_file"/>
+    <addaction name="Save_file"/>
+    <addaction name="Save_file_as"/>
+   </widget>
+   <widget class="QMenu" name="supportMenu">
+    <property name="title">
+     <string>Справка</string>
+    </property>
+    <addaction name="Help"/>
+   </widget>
+   <addaction name="fileMenu"/>
+   <addaction name="supportMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="New_file">
+   <property name="text">
+    <string>Новый</string>
+   </property>
+  </action>
+  <action name="Open_file">
+   <property name="text">
+    <string>Открыть</string>
+   </property>
+  </action>
+  <action name="Save_file">
+   <property name="text">
+    <string>Сохранить</string>
+   </property>
+  </action>
+  <action name="Save_file_as">
+   <property name="text">
+    <string>Сохранить как...</string>
+   </property>
+  </action>
+  <action name="Help">
+   <property name="text">
+    <string>Как пользоваться</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

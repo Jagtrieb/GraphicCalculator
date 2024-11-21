@@ -4,6 +4,7 @@ import numexpr as ne
 from numpy import nan
 from math import pi
 from PyQt6.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QColorDialog, QColorDialog, QFileDialog, QTableWidgetItem
+from PyQt6.QtWidgets import QFileDialog
 from PyQt6.QtGui import QColor, QPen, QBrush, QFont
 from PyQt6.QtCore import Qt
 from ui_file import Ui_MainWindow
@@ -23,36 +24,51 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
     def __init__(self):
         self.correctiveX = 0
         self.correctiveY = 0
-        self.PPS = 20 #Pixels_per_step
+        self.PPS = 40 #Pixels_per_step
         self.scale = 1
         super().__init__()
         self.setupUi(self)
-        self.functions = []
-        self.file_name = 'new.csv'
-        self.create_blank_table()
-        self.load_table_data(self.file_name)
-        self.tableWidget.itemDoubleClicked.connect(self.edit_color_in_table)
-        self.edit_flag = False
-        self.tableWidget.itemChanged.connect(self.edit_table_func)
-        #self.pushButton.clicked.connect(self.open_table)
-        #elf.saveFunc.clicked.connect(self.save_table_data)
-        self.CurrnetFunction = MathFunction('', '')
-        self.ColorSeletButton.clicked.connect(self.select_func_color)
-        self.FunctionInput.textChanged.connect(self.current_function_update)
-        self.ScalesBox.currentTextChanged.connect(self.change_scale)
-        self.AddFuncButton.clicked.connect(self.add_function)
         self.scene = QGraphicsScene()
         self.scene.setSceneRect(0, 0, 4600, 4600)
         self.count_coord_border()
         self.graphicsView.setBackgroundBrush(QBrush(QColor.fromRgb(255, 255, 255)))
         self.graphicsView.setScene(self.scene)
+        self.ScalesBox.addItems(['10%', '25%', '50%', '75%', '100%', '125%', '150%', '175%', '200%'])
+        self.ScalesBox.setCurrentIndex(4),
+        self.tableWidget.itemDoubleClicked.connect(self.edit_color_in_table)
+        #self.edit_flag = False
+        self.tableWidget.itemChanged.connect(self.edit_table_func)
+        self.CurrnetFunction = MathFunction('', '')
+        self.ColorSeletButton.clicked.connect(self.select_func_color)
+        self.FunctionInput.textChanged.connect(self.current_function_update)
+        self.ScalesBox.currentTextChanged.connect(self.change_scale)
+        self.AddFuncButton.clicked.connect(self.add_function)
+        self.deleteButton.clicked.connect(self.delete_func)
+        self.New_file.triggered.connect(self.reset)
+        self.Open_file.triggered.connect(self.open_table)
+        self.Save_file.triggered.connect(self.save_table_data)
+        self.Save_file_as.triggered.connect(self.save_as)
+        self.reset()
+
+    def reset(self):
+        self.scene.clear()
         self.draw_grid()
+        self.functions = []
+        self.fill_table()
+        self.FunctionInput.setText('')
+        self.ColorSeletButton.setStyleSheet(
+                "background-color: {}".format(QColor.fromRgb(255, 0, 0).name()))
+        self.CurrnetFunction = MathFunction('', '')
+        self.file_name = 'saved_graphs/new.csv'
+        self.create_blank_table()
+        self.load_table_data(self.file_name)
+        self.ScalesBox.setCurrentIndex(4)
+        self.scale = 1
 
 
     def count_coord_border(self):
         self.top = self.scene.height() / self.PPS / 2
         self.bottom = self.top * -1
-        print(self.top, self.bottom)
 
     def pix_to_coord(self, raw):
         """
@@ -235,12 +251,30 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
         self.fill_table()
 
     def save_table_data(self):
+        if self.file_name == 'saved_graphs/new.csv':
+            self.save_as()
         with open(self.file_name, 'w', encoding='utf8') as csvfile:
             writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             writer.writerow(['str_func', 'color', 'function'])
             for row, function in enumerate(self.functions):
                 rgb = (function.color.red(), function.color.green(), function.color.blue())
                 writer.writerow([function.str_function, rgb, function.function])
+
+    def save_as(self):
+        #options = QFileDialog.Options()
+        #options |= QFileDialog.DontUseNativeDialog
+        initial_dir = 'saved_graphs'
+        fileName, _ = QFileDialog.getSaveFileName(self, 
+            "Сохранить как", initial_dir, "Таблица(*.csv)")
+        if fileName:
+            with open(fileName, 'w', encoding='utf8') as csvfile:
+                writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(['str_func', 'color', 'function'])
+                for row, function in enumerate(self.functions):
+                    rgb = (function.color.red(), function.color.green(), function.color.blue())
+                    writer.writerow([function.str_function, rgb, function.function])
+                self.file_name = fileName
+            self.load_table_data(self.file_name)
 
     def fill_table(self):
         self.tableWidget.setColumnCount(3)
@@ -286,6 +320,12 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
             self.drawing_procedure()
             self.tableWidget.resizeColumnsToContents()
 
+    def delete_func(self):
+        id = self.deletionChoose.value()
+        if -1 < id - 1 < len(self.functions):
+            self.functions.pop(id - 1)
+            self.fill_table()
+            self.drawing_procedure()
 
 class MathFunction:
     """
