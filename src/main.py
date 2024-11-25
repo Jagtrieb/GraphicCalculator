@@ -2,13 +2,14 @@ import sys
 import csv
 import numexpr as ne
 from numpy import nan
-from math import pi
+from math import pi as PI
 from PyQt6.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QColorDialog, QColorDialog, QFileDialog, QTableWidgetItem
-from PyQt6.QtWidgets import QFileDialog
+from PyQt6.QtWidgets import QFileDialog, QMessageBox
 from PyQt6.QtGui import QColor, QPen, QBrush, QFont
 from PyQt6.QtCore import Qt
 from ui_file import Ui_MainWindow
 from copy import copy
+from MathFunction import MathFunction
 
 class GraphicCalculator(QMainWindow, Ui_MainWindow):
     """
@@ -29,7 +30,7 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.scene = QGraphicsScene()
-        self.scene.setSceneRect(0, 0, 4600, 4600)
+        self.scene.setSceneRect(0, 0, 4400, 4400)
         self.count_coord_border()
         self.graphicsView.setBackgroundBrush(QBrush(QColor.fromRgb(255, 255, 255)))
         self.graphicsView.setScene(self.scene)
@@ -48,6 +49,7 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
         self.Open_file.triggered.connect(self.open_table)
         self.Save_file.triggered.connect(self.save_table_data)
         self.Save_file_as.triggered.connect(self.save_as)
+        self.Help.triggered.connect(self.show_help)
         self.reset()
 
     def reset(self):
@@ -94,13 +96,19 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
         """
         Функция, которая отрисовывает математическую функцию
         """
+
         for pix_x in range(1, int(self.scene.width()) + 1):
             prev_x = self.pix_to_coord(pix_x - 1)
             cur_x = self.pix_to_coord(pix_x)
             cur_y = self.coords_to_pix(function.return_value(cur_x))
             prev_y = self.coords_to_pix(function.return_value(prev_x))
             if not ((str(cur_y) == 'nan') or (str(cur_y) == 'inf') and (self.bottom < cur_y < self.top)):
-                self.scene.addLine(pix_x - 1, prev_y, pix_x, cur_y, function.pen)
+                function.lines.append(self.scene.addLine(pix_x - 1, prev_y, pix_x, cur_y, function.pen)) 
+
+    def remove_function(self, function): #Пока не работает
+        for i in range(len(function.lines)):
+            self.scene.removeItem(function.lines[i])
+        function.lines = []
 
     def draw_all_functions(self):
         for func in self.functions:
@@ -136,11 +144,11 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
     def add_num_marks(self):
         end = int(self.scene.width())
         if self.correctiveY == 0:
-            for coord in range(0, end + self.PPS, self.PPS * 5):
-                self.create_num_mark(coord - self.PPS / 1.3, end / 2, str(round((coord - end / 2) / self.PPS / self.scale, 2)))
+            for coord in range(0, end + self.PPS, int(self.PPS * 1)):
+                self.create_num_mark(coord, end / 2, str(round((coord - end / 2) / self.PPS / self.scale, 2)))
         if self.correctiveX == 0:
-            for coord in range(0, end + self.PPS, self.PPS * 5):
-                self.create_num_mark(end / 2, end - coord - self.PPS / 1.5, str(round((coord - end / 2) / self.PPS / self.scale, 2)))
+            for coord in range(0, end + self.PPS, int(self.PPS * 1)):
+                self.create_num_mark(end / 2, end - coord, str(round((coord - end / 2) / self.PPS / self.scale, 2)))
 
     def drawing_procedure(self):
         """
@@ -163,7 +171,7 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
                 "background-color: {}".format(color.name()))
             self.CurrnetFunction.color = color
             self.CurrnetFunction.pen.setColor(color)
-            self.drawing_procedure()
+            self.draw_function(self.CurrnetFunction)
         
     def change_scale(self):
         self.scale = float(str(self.ScalesBox.currentText()[:-1])) / 100
@@ -191,6 +199,7 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
             elif '(' in fixed_function[i] or 'x' in fixed_function[i]:
                 fixed_function[i] = self.fix_multiply(fixed_function[i])
         fixed_function = ' '.join(fixed_function)
+        fixed_function = fixed_function.replace('pi', str(PI))
         return fixed_function
 
     def fix_multiply(self, raw_mult): #Функция, заменяющая умножение типа 2x или x(...) на 2 * x и x * (...)
@@ -231,6 +240,7 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
             
 
     def open_table(self):
+        self.reset()
         self.file_name = QFileDialog.getOpenFileName(self, 'Выбрать таблицу', '', 'Таблица (*.csv)')[0]
         self.load_table_data(self.file_name)
 
@@ -327,25 +337,12 @@ class GraphicCalculator(QMainWindow, Ui_MainWindow):
             self.fill_table()
             self.drawing_procedure()
 
-class MathFunction:
-    """
-    Класс математической функции, хранящий в себе Математическую функцию в двух формах (для расчёта и для демонстрации), а также цвет, которым будет отрисован график функции
-    """
-    def __init__(self, function, str_function, color = QColor.fromRgb(255, 0, 0)):
-        self.function = function
-        self.str_function = str_function
-        self.color = color
-        self.pen = QPen(self.color)
-        self.isCorrect = False
+    def show_help(self):
+        with open('src/help.txt', 'r') as f:
+            text = f.readlines()
+            text = '\n'.join(text)
+            QMessageBox.information(self, 'Справка', text)
 
-    def __str__(self):
-        return self.str_function
-    
-    def return_value(self, cur_x):
-        x = cur_x
-        if self.function:
-            return ne.evaluate(self.function)
-        return nan
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
